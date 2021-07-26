@@ -1,0 +1,82 @@
+<html lang="en-us">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>
+            Redirecting...
+        </title>
+        <script>
+            const SEARCH_BASE = "https://raw.githubusercontent.com/"
+            const JUMP_BASE = "https://github.com/"
+
+            function jump() {
+
+                const params = new URLSearchParams(window.location.search);
+
+                function get(name) {
+                    value = params.get(name) 
+                    if (!value) {
+                        msg = name + " not provided"
+                        error(msg)
+                        throw new Error(msg)
+                    }
+                    return value
+                }
+
+                const repo = get("repo")
+                const file = get("file")
+                const type = get("type")
+                const jump = get("jump")
+
+                let searchPhrase = jump
+
+                switch(type) {
+                    case "python-function":
+                    default:
+                        searchPhrase = "def " + searchPhrase
+                }
+
+                let rawFileUrl = SEARCH_BASE + repo + "/master/" + file
+
+                getFile(rawFileUrl).then((fileText) => {
+                    let lines = fileText.split("\n")
+                    let jumpLineNumber = 0
+
+                    for (let i = 0; i < lines.length; i++) {
+                        if (lines[i].indexOf(searchPhrase) > -1) {
+                            jumpLineNumber = i + 1
+                            break
+                        }
+                    }
+
+                    if (jumpLineNumber > 0) {
+                        window.location.href = JUMP_BASE + repo + "/blob/master/" + file + "#L" + jumpLineNumber
+                    } else {
+                        error("could not find jump location")
+                    }
+
+                }, (err) => {
+                    console.error(err)
+                })
+            }
+
+            function getFile(url) {
+                return new Promise((myResolve, myReject) => {
+                    let x = new XMLHttpRequest()
+                    x.onload = () => myResolve(x.responseText)
+                    x.onerror = () => myReject(x.status)
+                    x.open("GET", url)
+                    x.send()
+                });
+            }
+
+            function error(msg) {
+                const errorMessage = "Error: " + msg + "!"
+                document.getElementById("out").innerText = errorMessage
+                return errorMessage
+            }
+        </script>
+    </head>
+    <body onload="jump()">
+        <div id="out" style="font-family: monospace;">Please wait...</div>
+    </body>
+</html>
