@@ -30,6 +30,12 @@
                 let searchPhrase = jump
 
                 switch(type) {
+                    case "js-class":
+                        searchPhrase = "class " + searchPhrase
+                        break
+                    case "js-function":
+                        searchPhrase = "function " + searchPhrase
+                        break
                     case "python-function":
                     default:
                         searchPhrase = "def " + searchPhrase
