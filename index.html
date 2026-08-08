@@ -30,6 +30,9 @@
                 let searchPhrase = jump
 
                 switch(type) {
+                    case "any-text":
+                        // searchPhrase unchanged
+                        break
                     case "js-class":
                         searchPhrase = "class " + searchPhrase
                         break
@@ -41,7 +44,7 @@
                         searchPhrase = "def " + searchPhrase
                 }
 
-                let rawFileUrl = SEARCH_BASE + repo + "/master/" + file
+                let rawFileUrl = SEARCH_BASE + repo + "/refs/heads/master/" + file
 
                 getFile(rawFileUrl).then((fileText) => {
                     let lines = fileText.split("\n")
